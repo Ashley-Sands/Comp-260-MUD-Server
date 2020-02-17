@@ -45,6 +45,8 @@ class ClientMessage(CommandBase):
         super().__init__(socket)
         self.message = message
 
+    def runCommand( self, command, action ):
+        pass
 
 
 
