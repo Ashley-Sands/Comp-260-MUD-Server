@@ -1,4 +1,5 @@
 class Room:
+
     def __init__(self, name, desc, north, south, west, east):
         self.name = name
         self.desc = desc
