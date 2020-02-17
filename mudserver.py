@@ -33,11 +33,7 @@ def sendString(socket,str):
         if socket.send(data) == 0:
             raise socket.error
     except:
-        return False
-
-    return True
-
-
+        messageQueue.put( ClientLost( socket ) )
 
 def clientReceive(sock):
 
@@ -146,9 +142,6 @@ def handleClientMessage(command):
     currentClientsLock.release()
 
     debug_print('send:' + clientName + ':'+command.message)
-
-    if sendString(command.socket, 'Server says client sent message:'+ command.message) == False:
-        messageQueue.put(ClientLost(command.socket))
 
 def main():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
