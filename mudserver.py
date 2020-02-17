@@ -102,6 +102,7 @@ def handleClientLost(command):
     currentClientsLock.acquire()
     try:
         # TODO: turn into zombie :)
+        command.RunNetworkCommand(currentClients, sendString)
         debug_print('Removing lost client:' + currentClients[command.socket].clientName)
 
         del currentClients[command.socket]
@@ -117,7 +118,10 @@ def handleClientJoined(command):
     clientIndex += 1
 
     currentClientsLock.acquire()
+
     currentClients[command.socket] = Client(clientName)
+    command.RunNetworkCommand( currentClients, sendString )
+
     currentClientsLock.release()
 
     message = 'Joined server as:' + clientName
