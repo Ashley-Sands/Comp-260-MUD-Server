@@ -7,8 +7,6 @@ class Client:
         self.item = ""
         self.health = 100
 
-        self.is_zombie = False  # when a user disconnects they become zombies :)
-
     def is_alive( self ):
         return self.health > 0
 
@@ -22,3 +20,10 @@ class Client:
 
         return not self.is_alive()
 
+class ZombieClient(Client):
+
+    def __int__(self, client):
+        self.clientName = "Zombie"+client.clientName
+        self.currentRoom = client.currentRoom;
+        self.item = client.item
+        self.health = client.health / 2.0
