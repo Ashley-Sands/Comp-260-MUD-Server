@@ -5,7 +5,7 @@ import datetime
 
 from queue import *
 from commands import *
-
+from client import *
 
 messageQueue = Queue()
 
@@ -45,7 +45,7 @@ def clientReceive(sock):
     currentClientsLock.acquire()
 
     if sock in currentClients:
-        clientName = currentClients[sock]
+        clientName = currentClients[sock].clientName
     else:
         clientName = 'N/A'
         currentClientsLock.release()
@@ -63,7 +63,7 @@ def clientReceive(sock):
             currentClientsLock.acquire()
 
             if sock in currentClients:
-                clientName = currentClients[sock]
+                clientName = currentClients[sock].clientName
             else:
                 clientName = 'N/A'
                 clientValid = False
@@ -101,7 +101,8 @@ def acceptClients(serversocket):
 def handleClientLost(command):
     currentClientsLock.acquire()
     try:
-        debug_print('Removing lost client:' + currentClients[command.socket])
+        # TODO: turn into zombie :)
+        debug_print('Removing lost client:' + currentClients[command.socket].clientName)
 
         del currentClients[command.socket]
     except:
@@ -116,7 +117,7 @@ def handleClientJoined(command):
     clientIndex += 1
 
     currentClientsLock.acquire()
-    currentClients[command.socket] = clientName
+    currentClients[command.socket] = Client(clientName)
     currentClientsLock.release()
 
     message = 'Joined server as:' + clientName
@@ -130,7 +131,7 @@ def handleClientJoined(command):
 def handleClientMessage(command):
 
     currentClientsLock.acquire()
-    clientName = currentClients[command.socket]
+    clientName = currentClients[command.socket].clientName
     currentClientsLock.release()
 
     debug_print('send:' + clientName + ':'+command.message)

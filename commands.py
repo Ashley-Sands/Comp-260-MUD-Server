@@ -3,7 +3,6 @@ class CommandBase:
         self.socket = socket
 
 
-
 class ClientJoined(CommandBase) :
     def __init__(self, socket):
         super().__init__(socket)
