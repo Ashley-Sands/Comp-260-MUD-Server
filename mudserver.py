@@ -13,6 +13,9 @@ clientIndex = 0
 currentClients = {}
 currentClientsLock = threading.Lock()
 
+zombieIndex = 0
+zombieClients = {}
+
 host = ''
 port = 0
 
@@ -99,11 +102,15 @@ def acceptClients(serversocket):
 
 
 def handleClientLost(command):
+    global zombieIndex
+
     currentClientsLock.acquire()
     try:
-        # TODO: turn into zombie :)
         command.RunNetworkCommand(currentClients, sendString)
         debug_print('Removing lost client:' + currentClients[command.socket].clientName)
+
+        zombieClients["zombie_"+ str(zombieIndex)] = ZombieClient(currentClients[command.socket])
+        zombieIndex += 1
 
         del currentClients[command.socket]
     except:
