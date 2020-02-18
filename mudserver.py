@@ -4,7 +4,7 @@ import threading
 import datetime
 
 from queue import *
-from commands import *
+from Commands.commands import *
 from client import *
 
 messageQueue = Queue()
