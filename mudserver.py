@@ -81,7 +81,7 @@ def clientReceive(sock):
 
                 debug_print('recv:' + clientName + ':' + incoming_msg)
 
-                messageQueue.put(ClientMessage(sock,incoming_msg) )
+                messageQueue.put(ClientMessage(sock, incoming_msg) )
             else:
                 raise socket.error
         except socket.error:
@@ -102,7 +102,10 @@ def handleClientLost(command):
 
     currentClientsLock.acquire()
     try:
-        command.RunNetworkCommand(currentClients, sendString)
+
+        for c in command.RunCommand(currentClients):
+            messageQueue.put( c )
+
         debug_print('Removing lost client:' + currentClients[command.socket].clientName)
 
         zombieClients["zombie_"+ str(zombieIndex)] = ZombieClient(currentClients[command.socket])
@@ -114,6 +117,7 @@ def handleClientLost(command):
 
     currentClientsLock.release()
 
+
 def handleClientJoined(command):
     global clientIndex
 
@@ -123,7 +127,9 @@ def handleClientJoined(command):
     currentClientsLock.acquire()
 
     currentClients[command.socket] = Client(clientName)
-    command.RunNetworkCommand( currentClients, sendString )
+
+    for c in command.RunCommand( currentClients ):
+        messageQueue.put( c )
 
     currentClientsLock.release()
 
@@ -135,10 +141,18 @@ def handleClientJoined(command):
     thread = threading.Thread(target=clientReceive, args=(command.socket,))
     thread.start()
 
+
 def handleClientMessage(command):
 
     currentClientsLock.acquire()
-    clientName = currentClients[command.socket].clientName
+
+    clientName = "None"
+
+    if command.socket in currentClients:
+        clientName = currentClients[ command.socket ].clientName
+
+    command.senMessage( sendString, currentClients )
+
     currentClientsLock.release()
 
     debug_print('send:' + clientName + ':'+command.message)
