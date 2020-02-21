@@ -4,10 +4,11 @@ class CommandBase:
 
 class ClientCommand(CommandBase):
 
-    def RunCommand( self, clients ):
+    def RunCommand( self, clients, dungeon ):
         """ Runs the command returning a list of follow up commands
 
         :param clients:     list of current active clients
+        :param dungeon:     The active dungeon for this game
         :return:            a list of follow up commands.
         """
         pass

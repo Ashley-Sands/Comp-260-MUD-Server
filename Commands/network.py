@@ -1,4 +1,4 @@
-from Commands.Message import *
+from Commands.message import *
 
 class ClientNetworkCommand(ClientCommand):
 

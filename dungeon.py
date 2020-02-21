@@ -38,18 +38,17 @@ class Dungeon:
 
     def MovePlayer(self,direction):
         if self.isValidMove(direction):
+
             if direction == "north":
                 self.currentRoom = self.roomMap[self.currentRoom].north
-                return
-
-            if direction == "south":
+            elif direction == "south":
                 self.currentRoom = self.roomMap[self.currentRoom].south
-                return
-
-            if direction == "east":
+            elif direction == "east":
                 self.currentRoom = self.roomMap[self.currentRoom].east
-                return
-
-            if direction == "west":
+            elif direction == "west":
                 self.currentRoom = self.roomMap[self.currentRoom].west
-                return
+
+            return self.DisplayCurrentRoom()
+
+        else:
+            return "Invalid move. Type help for available moves"

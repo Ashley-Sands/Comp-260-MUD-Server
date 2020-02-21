@@ -6,8 +6,10 @@ import datetime
 from queue import *
 from Commands.commands import *
 from client import *
+from dungeon import *
 
 messageQueue = Queue()
+activeDungeon = Dungeon()
 
 clientIndex = 0
 currentClients = {}
@@ -81,7 +83,9 @@ def clientReceive(sock):
 
                 debug_print('recv:' + clientName + ':' + incoming_msg)
 
-                messageQueue.put(ClientMessage(sock, incoming_msg) )
+                for act in ClientActionDispatcher( sock, incoming_msg).RunCommand(currentClients, activeDungeon):
+                    messageQueue.put( act )
+                    # messageQueue.put(ClientMessage(sock, incoming_msg, ClientMessage.MESSAGE_TYPE_ALL_OTHER) )
             else:
                 raise socket.error
         except socket.error:
