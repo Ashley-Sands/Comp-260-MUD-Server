@@ -4,8 +4,6 @@ from room import Room
 class Dungeon:
     def __init__(self):
 
-        self.currentRoom = 0
-
         self.roomMap = {
             "room 0": Room("room 0", "You are standing in the entrance hall\nAll adventures start here", "room 1", "",  "", ""),
             "room 1": Room("room 1", "You are in room 1","", "room 0", "room 3", "room 2"),
@@ -15,9 +13,7 @@ class Dungeon:
             "room 5": Room("room 5", "You are in room 5", "", "room 1", "", "room 4")
         }
 
-        self.currentRoom = "room 0"
-
-    def DisplayCurrentRoom(self):
+    def DisplayRoomOptions(self, roomName):
         """ displays the current room and available exits.
 
         :return: the message that to be dusplayed to the client execute the command
@@ -26,29 +22,32 @@ class Dungeon:
         exits = ["NORTH", "SOUTH", "EAST", "WEST"]
         exitStr = ''
 
+        if roomName.lower() not in self.roomMap:
+            return "Room does not exist " + roomName
+
         for i in exits:
-            if self.roomMap[self.currentRoom].hasExit(i.lower()):
-                exitStr += i + " "
+            if self.roomMap[roomName].hasExit(i.lower()):
+                exitStr += i + "\n"
 
-        return self.roomMap[self.currentRoom].desc + " \nExits\n" + exitStr
+        return self.roomMap[roomName].desc + " \nExits\n" + exitStr
 
 
-    def isValidMove(self, direction):
-        return self.roomMap[self.currentRoom].hasExit(direction)
+    def isValidMove(self, direction, roomName):
+        return roomName.lower() in self.roomMap and self.roomMap[roomName].hasExit(direction)
 
-    def MovePlayer(self,direction):
-        if self.isValidMove(direction):
+    def MovePlayer(self,direction, roomName):
+        if self.isValidMove(direction, roomName):
 
             if direction == "north":
-                self.currentRoom = self.roomMap[self.currentRoom].north
+                roomName = self.roomMap[roomName].north
             elif direction == "south":
-                self.currentRoom = self.roomMap[self.currentRoom].south
+                roomName = self.roomMap[roomName].south
             elif direction == "east":
-                self.currentRoom = self.roomMap[self.currentRoom].east
+                roomName = self.roomMap[roomName].east
             elif direction == "west":
-                self.currentRoom = self.roomMap[self.currentRoom].west
+                roomName = self.roomMap[roomName].west
 
-            return self.DisplayCurrentRoom()
+            return True, roomName
 
         else:
-            return "Invalid move. Type help for available moves"
+            return False, "Invalid"

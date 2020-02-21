@@ -3,7 +3,7 @@ class Client:
 
     def __init__(self, client_name):
         self.clientName = client_name
-        self.currentRoom = ""
+        self.currentRoom = "room 0"
         self.item = ""
         self.health = 100
 

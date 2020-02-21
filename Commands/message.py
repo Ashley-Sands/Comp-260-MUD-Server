@@ -36,18 +36,20 @@ class ClientMessage(CommandBase):
     def message_all_other( self, send_message_func, clients ):
 
         clientExist = self.socket in clients
+        from_client = clients[self.socket].clientName
 
         for c in clients:
             if not clientExist or ( clientExist and c is not self.socket ):
-                send_message_func(c, self.message)
+                send_message_func(c, from_client + ": " +self.message)
 
     def message_room( self, send_message_func, clients ):
 
-        client_room_id = ""
+        if self.socket not in clients:
+            return
 
-        if self.socket in clients:
-            client_room_id = clients[self.socket].currentRoom
+        client_room_id = clients[self.socket].currentRoom
+        from_client = clients[self.socket].clientName
 
         for c in clients:
-            if clients[c] is not self.socket and clients[c] == client_room_id:
-                send_message_func( c, self.message )
+            if c is not self.socket and clients[c].currentRoom == client_room_id:
+                send_message_func( c, from_client + ": " + self.message )
