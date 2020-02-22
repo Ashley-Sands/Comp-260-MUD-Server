@@ -1,41 +1,11 @@
 from Commands.message import *
 
-class ClientActionDispatcher( ClientCommand ):
-
-    def __init__(self, socket, message):
-        super().__init__(socket)
-        self.commands = {
-            "help": ClientActionHelp,
-            "go": ClientActionGo,
-            "talk": ClientActionTalk,
-            "room": ClientActionRoom,
-            "rename": ClientActionRename
-        }
-        self.message = message
-
-    def RunCommand( self, clients, dungeon ):
-
-        followUpCommands = []
-
-        user_input = self.message.split( ' ' )
-        command = user_input[0].lower()
-        action = ""
-
-        if command != "help" and len(user_input) < 2 or command not in self.commands:
-            return [ ClientMessage( self.socket, "Invalid command", ClientMessage.MESSAGE_TYPE_SELF ) ]
-
-        if len(user_input) >= 2:
-            action = ' '.join(user_input[1:])
-
-        return self.commands[ command ](self.socket, action).RunCommand( clients, dungeon )
-
-
 class ClientActionHelp( ClientAction ):
 
     def __init__(self, socket, action):
         super().__init__(socket, action)
 
-        self.help_func = { "room" : self.help_room,
+        self.help_func = { "location" : self.help_room,
                            "health": self.help_health }
 
     def RunCommand( self, clients, dungeon ):
@@ -43,14 +13,12 @@ class ClientActionHelp( ClientAction ):
         if self.socket not in clients:
             return []
 
-        if self.action.lower() in self.help_func:
+        if self.action.lower() in ClientActionDispatcher.commands[self.action.lower()]:
+            help = ClientActionDispatcher.commands[self.action.lower()].ActionHelp()
+        elif self.action.lower() in self.help_func:
             help = self.help_func[self.action.lower()](clients)
         else:
             help = dungeon.DisplayRoomOptions( clients[self.socket].currentRoom )
-
-        #help = "\nType 'go [direction]' to move into another room\n"
-        #help = help + "[Directions]\n"
-        #help = help + "North\nEast\nSouth\nWest"
 
         return [ClientMessage(self.socket, help, ClientMessage.MESSAGE_TYPE_SELF)]
 
@@ -109,3 +77,35 @@ class ClientActionRename(ClientAction):
             ClientMessage( self.socket, oldName + " is now known as " +self.action, ClientMessage.MESSAGE_TYPE_ALL_OTHER, False ),
             ClientMessage( self.socket, "You are now known as "+self.action, ClientMessage.MESSAGE_TYPE_SELF )
         ]
+
+
+class ClientActionDispatcher( ClientCommand ):
+
+    commands = {
+        "help": ClientActionHelp,
+        "go": ClientActionGo,
+        "talk": ClientActionTalk,
+        "room": ClientActionRoom,
+        "rename": ClientActionRename
+    }
+
+    def __init__( self, socket, message ):
+        super().__init__( socket )
+
+        self.message = message
+
+    def RunCommand( self, clients, dungeon ):
+
+        followUpCommands = [ ]
+
+        user_input = self.message.split( ' ' )
+        command = user_input[ 0 ].lower()
+        action = ""
+
+        if command != "help" and len( user_input ) < 2 or command not in self.commands:
+            return [ ClientMessage( self.socket, "Invalid command", ClientMessage.MESSAGE_TYPE_SELF ) ]
+
+        if len( user_input ) >= 2:
+            action = ' '.join( user_input[ 1: ] )
+
+        return self.commands[ command ]( self.socket, action ).RunCommand( clients, dungeon )

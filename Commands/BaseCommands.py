@@ -18,3 +18,7 @@ class ClientAction(ClientCommand):
     def __init__(self, socket, action):
         super().__init__(socket)
         self.action = action
+
+    @staticmethod
+    def ActionHelp():
+        return ""
