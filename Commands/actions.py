@@ -11,6 +11,11 @@ class ClientActionHelp( ClientAction ):
                            "options": self.help_options
                            }
 
+        self.help_description = { "location": "Get current location",
+                                  "health": "Get current health",
+                                  "options": "get current options"
+                                }
+
     def RunCommand( self, clients, dungeon ):
 
         if self.socket not in clients:
@@ -25,9 +30,23 @@ class ClientActionHelp( ClientAction ):
 
         return [ClientMessage(self.socket, help, ClientMessage.MESSAGE_TYPE_SELF, False)]
 
+    def ActionHelp( self, name ):
+        return "**No one can here you screams down here**"
+
     def default_help( self ):
 
-        return "HHHHHHHHHHHHHEEEEEEEEEEEEEEELLLLLLLLLLLLLLPPPPPPPPPPPP!\n**No one can here you screams**"
+        help = "Type help [action] for more info \n[Actions]\n"
+
+        # list action help
+        for ha in ClientActionDispatcher.commands:
+            help += "'"+ha+"'\n"
+
+        # list other help
+        for hd in self.help_description:
+            help += "'"+hd+"'\n"
+
+        return "\nHHHHHHHHHHHHHEEEEEEEEEEEEEEELLLLLLLLLLLLLLPPPPPPPPPPPP!\n" \
+               "**You hear a faint whisper cut through the gloom**\n\n" + help
 
     def help_room( self, clients, dungeon ):
         return "While stareing blankly throught the dark gloomy room you notice that\n" \
