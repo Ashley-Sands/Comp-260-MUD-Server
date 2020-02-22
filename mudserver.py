@@ -27,6 +27,7 @@ def debug_print(text):
 
 def sendString(socket,str):
 
+    str+"\n"
     data= bytes(str,'utf-8')
     try:
         if socket.send(len(data).to_bytes(2, byteorder='big')) == 0:
