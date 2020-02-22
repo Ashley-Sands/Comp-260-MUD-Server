@@ -53,6 +53,8 @@ class Dungeon:
             if self.roomMap[roomName].hasExit(i.lower()):
                 exitStr += i + "\n"
 
+        exitStr = exitStr[:-1]  # remove the last new line :)
+
         return self.roomMap[roomName].desc + " \nYou see "+str(len(exitStr.split('\n')))+" doors covered in blood \n" + exitStr
 
 
