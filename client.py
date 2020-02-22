@@ -1,12 +1,14 @@
 import random
 from room import Item
+from Commands.message import *
 
 class Client:
 
     def __init__(self, client_name):
         self.clientName = client_name
         self.currentRoom = "room 0"
-        self.item = None
+        self.bearHands = Item("Bare Hands", 10, 999, 0.23)  # default item
+        self.item = self.bearHands
         self.health = 100
         self.defence = 0.5
 
@@ -28,7 +30,7 @@ class Client:
     def attack( self, attackWithItem, clients):
         """returns tuple (is alive, damage taken, damage given)"""
 
-        damageTaken, damageGiven = Item.getItemDamage(attackWithItem, clients)
+        damageTaken, damageGiven = Item.getItemDamage(attackWithItem, self.item, clients)
 
         return self.is_alive(), damageTaken, damageGiven
 
@@ -44,8 +46,16 @@ class Client:
         self.item = item
         self.item.itemBrokenCallback.append( self.itemBroken )
 
+    def dropItem( self, room ):
+
+        if self.item is None:
+            return
+
+        self.item.itemBrokenCallback.remove(self.itemBroken())
+        self.item = self.bearHands
+
     def itemBroken( self ):
-        self.item = None
+        self.item = self.bearHands
 
 
 class ZombieClient(Client):

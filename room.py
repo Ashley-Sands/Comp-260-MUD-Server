@@ -60,16 +60,24 @@ class Item:
         self.damageChance = damageChance
         self.itemBrokenCallback = []
 
-    def Use( self, client ):
+    def Use( self, victim ):
         """ use item against client (or zombie client)
 
         :param client:  the client to attack
         :return: tuple of damage to client, damage to self
         """
 
-        damage = self.damage * (self.currentHP / self.maxHP)
-        selfDamage = damage * random.uniform(0.0, client.defence)
-        damage -= selfDamage
+        damage = self.damage * (self.currentHP / self.maxHP)                # get the max amount of damage this weapon can cause
+        victimDamage = victim.item.damage * (self.currentHP / self.maxHP)   # get the nax amount of damage the victims weapon can cause
+
+        winPrecent = random.uniform(0.5, 1.0)
+
+        if random.random < victim.defence:   # victim wins
+            victimDamage *= winPrecent
+            damage *= (1.0 - winPrecent)
+        else:                               # attacker wins
+            damage *= winPrecent
+            victimDamage *= (1.0 - winPrecent)
 
         self.currentHP -= random.randrange(1, 50)
 
@@ -77,7 +85,7 @@ class Item:
             for cb in self.itemBrockenCallback:
                 cb()
 
-        return damage, selfDamage
+        return damage, victimDamage
 
     def getInfo( self ):
 
@@ -85,9 +93,6 @@ class Item:
                " damage chance " + str(self.damageChance * 100) + "%"
 
     @staticmethod
-    def getItemDamage( item, clients ):
+    def getItemDamage( attackItem, victim):
 
-        if item is None:    # bare hands
-            return 10, 1
-        else:
-            return item.Use(clients)
+        return attackItem.Use(victim)
