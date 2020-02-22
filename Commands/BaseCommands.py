@@ -20,4 +20,4 @@ class ClientAction(ClientCommand):
         self.action = action
 
     def ActionHelp(self, name):
-        return "\nNo Help Available for "+name
+        return "No Help Available for "+name

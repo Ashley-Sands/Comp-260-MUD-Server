@@ -45,7 +45,7 @@ class ClientActionHelp( ClientAction ):
         for hd in self.help_description:
             help += "'"+hd+"'\n"
 
-        return "\nHHHHHHHHHHHHHEEEEEEEEEEEEEEELLLLLLLLLLLLLLPPPPPPPPPPPP!\n" \
+        return "HHHHHHHHHHHHHEEEEEEEEEEEEEEELLLLLLLLLLLLLLPPPPPPPPPPPP!\n" \
                "**You hear a faint whisper cut through the gloom**\n\n" + help
 
     def help_room( self, clients, dungeon ):
