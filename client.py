@@ -1,4 +1,5 @@
 import random
+from room import Item
 
 class Client:
 
@@ -23,6 +24,13 @@ class Client:
         self.health -= damage
 
         return not self.is_alive()
+
+    def attack( self, attackWithItem, clients):
+        """returns tuple (is alive, damage taken, damage given)"""
+
+        damageTaken, damageGiven = Item.getItemDamage(attackWithItem, clients)
+
+        return self.is_alive(), damageTaken, damageGiven
 
     def collectItem( self, item, room ):
         # take the item from the room

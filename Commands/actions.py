@@ -151,6 +151,76 @@ class ClientActionSearch(ClientAction):
 
         return [ ClientMessage( self.socket, message, ClientMessage.MESSAGE_TYPE_SELF, False ) ]
 
+class ClientActionAttackUser( ClientAction ):
+
+    def RunCommand( self, clients, dungeon ):
+
+        clientToAttack = None
+        clientToAttackSocket = None
+        for c in clients:
+            if clients[c].clientName == self.action:
+                clientToAttack = clients[c]
+                clientToAttackSocket = c
+                break
+
+        if clientToAttack is None:
+            return [ ClientMessage( self.socket, self.action + " not found in current room", ClientMessage.MESSAGE_TYPE_SELF ) ]
+
+        attacker_name = clientToAttack.clientName
+        victim_name = clients[self.socket].clientName
+
+        weapon = clients[self.socket].item
+        defence_weapon = clientToAttack.item
+
+        clientAlive, damageGiven, damageTaken = clientToAttack.attack( weapon, clients )
+        selfDeaded = False
+
+        messages = [] # list of tuples. tuple layout (message, message type, [(optional) display from in message, [(optional)ignore client name]] )
+
+        if not clientAlive: # that was easy there deaded
+
+            messages.append( ("You killed "+victim_name, ClientMessage.MESSAGE_TYPE_SELF, False) )
+            messages.append( (attacker_name+" killed "+victim_name, ClientMessage.MESSAGE_TYPE_ALL_OTHER_EXCEPT, False, victim_name) )
+            messages.append( (attacker_name+" killed You", ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name) )
+            # add a decision to the victim so they have to reset the game now they have been killed
+            clientToAttack.pendingAction = ClientNewGame(clientToAttackSocket)
+
+        else:   # they put up a bit of a fight, as a result you take damage as well
+
+            clients[ self.socket ].takeDamage( damageTaken )
+            messages.append( (victim_name + " put up a bit of fight, as a result you have taken " + str(damageTaken) + " damage", ClientMessage.MESSAGE_TYPE_SELF, False) )
+            messages.append( (attacker_name + " attacked " + victim_name, ClientMessage.MESSAGE_TYPE_ALL_OTHER, False) )
+            messages.append( (attacker_name + " attacked you with a " + weapon.name + " causing "+ str(damageGiven) +" damage.") )
+
+
+        if selfDeaded:  # you got your ass handed to ya.
+            messages.append( (victim_name +" killed You", ClientMessage.MESSAGE_TYPE_SELF, False ) )
+            messages.append( ( attacker_name + " was killed by " + victim_name,
+                                            ClientMessage.MESSAGE_TYPE_ALL_OTHER_EXCEPT, False, victim_name ) )
+            messages.append( ("You put up a good fight and managed to deliver a fatal blow to your attackers" 
+                              " head with you "+defence_weapon.name + " resulting in instance death\n"
+                              " ** There's blood everywhere **\nlets hope the zombies don't smell that",
+                              ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name ) )
+            # give the attack the option to start again
+            clients[self.socket].pendingAction = ClientNewGame(self.socket)
+        else:
+            messages.append( (" But you put a fight and managed to defend your self. ("+attacker_name+" lost "+damageTaken+" hp) ",
+                              ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name) )
+
+        # build the messages to each endpoint into a single message for each
+        msg = {}            # dict of tuple (same as messages tuple)
+        client_msgs = []    # list of final messages
+
+        for m in messages:
+            if m[2] in msg:
+                msg[ m[2] ][0] = msg[ m[2] ][0] + "\n" + m[0]
+            else:
+                msg[ m[2] ] = m
+
+        for m in msg:
+            client_msgs.append( ClientMessage(self.socket, *m) )
+
+        return client_msgs
 
 class ClientActionDispatcher( ClientCommand ):
 
@@ -158,9 +228,12 @@ class ClientActionDispatcher( ClientCommand ):
         "help": ClientActionHelp,
         "go": ClientActionGo,
         "talk": ClientActionTalk,
+        #"whisper": ClientActionWhisper,
         "room": ClientActionRoom,
         "rename": ClientActionRename,
-        "search": ClientActionSearch
+        "search": ClientActionSearch,
+        "attack": ClientActionAttackUser
+        #"graffiti": ClientActionGraffiti
     }
 
     def __init__( self, socket, message ):

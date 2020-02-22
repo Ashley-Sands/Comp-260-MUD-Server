@@ -83,3 +83,11 @@ class Item:
 
         return "hp: "+str(int(self.currentHP))+" of "+str(self.maxHP) + " damage: " + str(self.damage) +\
                " damage chance " + str(self.damageChance * 100) + "%"
+
+    @staticmethod
+    def getItemDamage( item, clients ):
+
+        if item is None:    # bare hands
+            return 10, 1
+        else:
+            return item.Use(clients)

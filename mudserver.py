@@ -99,7 +99,19 @@ def acceptClients(serversocket):
     debug_print('acceptThread running')
     while(True):
         (clientsocket, address) = serversocket.accept()
-        messageQueue.put(ClientJoined(clientsocket))
+
+        print(ClientActionHelp(clientsocket, "options").RunCommand(currentClients, activeDungeon))
+
+        messageQueue.put( ClientJoined( clientsocket ) )
+
+        while clientsocket not in currentClients:   # wait for the user to be added to users
+            pass
+
+        messageQueue.put(ClientJoined(clientsocket).welcome()[0])
+        for h in ClientActionHelp(clientsocket, "options").RunCommand(currentClients, activeDungeon):
+            messageQueue.put(h)
+
+
 
 
 def handleClientLost(command):

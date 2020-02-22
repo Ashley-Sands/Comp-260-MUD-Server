@@ -27,3 +27,18 @@ class ClientCollectItem(ClientDecisions):
         else:
             return False, \
                    [ ClientMessage( self.socket, "Decision not found\n" + self.ActionDesc(), ClientMessage.MESSAGE_TYPE_SELF, False ) ]
+
+class ClientNewGame(ClientDecisions):
+
+    def __init__(self, socket):
+        super().__init__(socket)
+
+    def ActionDesc( self ):
+        return "You have been kill, 'new' game?"
+
+    def Decision( self, clients, dungeon, decision ):
+
+        if decision == "yes" or decision == "new" or decision == "y":
+            pass    # new game things...
+        else:
+            return [ ClientMessage( self.socket, "Decision not found\n" + self.ActionDesc(), ClientMessage.MESSAGE_TYPE_SELF, False ) ]
