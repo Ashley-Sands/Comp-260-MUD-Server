@@ -106,6 +106,6 @@ class ClientActionRename(ClientAction):
         clients[self.socket].clientName = self.action
 
         return [
-            ClientMessage( self.socket, oldName + " is now known as " +self.action, ClientMessage.MESSAGE_TYPE_ALL_OTHER ),
+            ClientMessage( self.socket, oldName + " is now known as " +self.action, ClientMessage.MESSAGE_TYPE_ALL_OTHER, False ),
             ClientMessage( self.socket, "You are now known as "+self.action, ClientMessage.MESSAGE_TYPE_SELF )
         ]
