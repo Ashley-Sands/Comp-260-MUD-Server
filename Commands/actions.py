@@ -1,5 +1,6 @@
 from Commands.message import *
 
+
 class ClientActionHelp( ClientAction ):
 
     def __init__(self, socket, action):
@@ -13,14 +14,14 @@ class ClientActionHelp( ClientAction ):
         if self.socket not in clients:
             return []
 
-        if self.action.lower() in ClientActionDispatcher.commands[self.action.lower()]:
-            help = ClientActionDispatcher.commands[self.action.lower()].ActionHelp()
+        if self.action.lower() in ClientActionDispatcher.commands:
+            help = ClientActionDispatcher.commands[self.action.lower()].ActionHelp( ClientActionDispatcher.commands[self.action.lower()], self.action.lower() )
         elif self.action.lower() in self.help_func:
             help = self.help_func[self.action.lower()](clients)
         else:
             help = dungeon.DisplayRoomOptions( clients[self.socket].currentRoom )
 
-        return [ClientMessage(self.socket, help, ClientMessage.MESSAGE_TYPE_SELF)]
+        return [ClientMessage(self.socket, help, ClientMessage.MESSAGE_TYPE_SELF, False)]
 
     def help_room( self, clients ):
         return "While stareing blankly throught the dark gloomy room you notice that\n" \
@@ -55,6 +56,9 @@ class ClientActionTalk(ClientAction):
     def RunCommand( self, clients, dungeon ):
         return [ ClientMessage( self.socket, self.action, ClientMessage.MESSAGE_TYPE_ROOM ) ]
 
+    def ActionHelp(self, name):
+        return ""
+
 class ClientActionRoom(ClientAction):
 
     def RunCommand( self, clients, dungeon ):
@@ -65,7 +69,6 @@ class ClientActionRename(ClientAction):
     def RunCommand( self, clients, dungeon ):
 
         # check that the name is not already taken
-
         for c in clients:
             if self.action == clients[c].clientName:
                 return [ClientMessage( self.socket, self.action + " is already taken, please chooses another name!", ClientMessage.MESSAGE_TYPE_ROOM )]

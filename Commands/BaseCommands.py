@@ -19,6 +19,5 @@ class ClientAction(ClientCommand):
         super().__init__(socket)
         self.action = action
 
-    @staticmethod
-    def ActionHelp():
-        return ""
+    def ActionHelp(self, name):
+        return "No Help Available for "+name
