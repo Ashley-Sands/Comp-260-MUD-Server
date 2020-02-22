@@ -27,6 +27,7 @@ class Dungeon:
 
     def GetRandomItems( self, items, maxItemCount ):
 
+        random.seed = random.randint(1, 222)
         itemCount = random.randint(0, maxItemCount)
         roomItems = []
 
@@ -52,7 +53,7 @@ class Dungeon:
             if self.roomMap[roomName].hasExit(i.lower()):
                 exitStr += i + "\n"
 
-        return self.roomMap[roomName].desc + " \nExits\n" + exitStr
+        return self.roomMap[roomName].desc + " \nYou see "+str(len(exitStr.split('\n')))+" doors covered in blood \n" + exitStr
 
 
     def isValidMove(self, direction, roomName):

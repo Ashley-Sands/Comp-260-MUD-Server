@@ -56,7 +56,11 @@ class ClientActionHelp( ClientAction ):
         return "Remaining Health: "+ str(clients[self.socket].health)
 
     def help_options( self, clients, dungeon ):
-        return dungeon.DisplayRoomOptions( clients[self.socket].currentRoom )
+        findItemChance = dungeon.roomMap[ clients[self.socket].currentRoom ].searchChance()
+
+        actions = "\n\nOther actions\n'search' - search room for items ("+ str(findItemChance * 100) +"% chance)"
+        return dungeon.DisplayRoomOptions( clients[self.socket].currentRoom ) + actions
+
 
 
 class ClientActionGo(ClientAction):
