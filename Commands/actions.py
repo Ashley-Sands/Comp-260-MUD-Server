@@ -158,7 +158,7 @@ class ClientActionAttackUser( ClientAction ):
         clientToAttack = None
         clientToAttackSocket = None
         for c in clients:
-            if clients[c].clientName == self.action:
+            if clients[c].clientName == self.action and clients[c].currentRoom == clients[self.socket].currentRoom:
                 clientToAttack = clients[c]
                 clientToAttackSocket = c
                 break
