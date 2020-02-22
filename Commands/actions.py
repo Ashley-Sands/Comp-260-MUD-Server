@@ -4,7 +4,13 @@ class ClientActionDispatcher( ClientCommand ):
 
     def __init__(self, socket, message):
         super().__init__(socket)
-        self.commands = { "help": ClientActionHelp, "go": ClientActionGo, "talk": ClientActionTalk, "room": ClientActionRoom }
+        self.commands = {
+            "help": ClientActionHelp,
+            "go": ClientActionGo,
+            "talk": ClientActionTalk,
+            "room": ClientActionRoom,
+            "rename": ClientActionRename
+        }
         self.message = message
 
     def RunCommand( self, clients, dungeon ):
@@ -85,3 +91,21 @@ class ClientActionRoom(ClientAction):
 
     def RunCommand( self, clients, dungeon ):
         return [ ClientMessage( self.socket, self.action, ClientMessage.MESSAGE_TYPE_ROOM ) ]
+
+class ClientActionRename(ClientAction):
+
+    def RunCommand( self, clients, dungeon ):
+
+        # check that the name is not already taken
+
+        for c in clients:
+            if self.action == clients[c].clientName:
+                return [ClientMessage( self.socket, self.action + " is already taken, please chooses another name!", ClientMessage.MESSAGE_TYPE_ROOM )]
+
+        oldName = clients[self.socket].clientName
+        clients[self.socket].clientName = self.action
+
+        return [
+            ClientMessage( self.socket, oldName + " is now known as " +self.action, ClientMessage.MESSAGE_TYPE_ALL_OTHER ),
+            ClientMessage( self.socket, "You are now known as "+self.action, ClientMessage.MESSAGE_TYPE_SELF )
+        ]
