@@ -21,3 +21,14 @@ class ClientAction(ClientCommand):
 
     def ActionHelp(self, name):
         return "No Help Available for "+name
+
+class ClientDecisions(CommandBase):
+
+    def __init__(self, socket):
+        super().__init__(socket)
+
+    def ActionDesc(self, name):
+        return "No Help Available for "+name
+
+    def Decision( self, clients, dungeon, action ):
+        pass

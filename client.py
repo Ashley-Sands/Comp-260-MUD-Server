@@ -9,6 +9,8 @@ class Client:
         self.health = 100
         self.defence = 0.5
 
+        self.pendingAction = None   # used for when a client needs to make a decisions
+
     def is_alive( self ):
         return self.health > 0
 
@@ -24,12 +26,12 @@ class Client:
 
     def collectItem( self, item, room ):
         # take the item from the room
-        room.remove(item)
+        room.items.remove(item)
 
         # drop our current item in room
         if self.item is not None:
             self.item.itemBrokenCallback.remove(self.itemBroken)
-            room.append(self.item)
+            room.items.append(self.item)
 
         self.item = item
         self.item.itemBrokenCallback.append( self.itemBroken )

@@ -1,5 +1,5 @@
 from Commands.message import *
-
+import random
 
 class ClientActionHelp( ClientAction ):
 
@@ -57,8 +57,9 @@ class ClientActionHelp( ClientAction ):
 
     def help_options( self, clients, dungeon ):
         findItemChance = dungeon.roomMap[ clients[self.socket].currentRoom ].searchChance()
+        itemCount = str(len(dungeon.roomMap[ clients[self.socket].currentRoom ].items))
 
-        actions = "\n\nOther actions\n'search' - search room for items ("+ str(findItemChance * 100) +"% chance)"
+        actions = "\n\nOther actions\n'search' - search room for items ("+ str(findItemChance * 100) +"% +"+itemCount+"chance)"
         return dungeon.DisplayRoomOptions( clients[self.socket].currentRoom ) + actions
 
 
@@ -94,10 +95,12 @@ class ClientActionTalk(ClientAction):
     def ActionHelp(self, name):
         return ""
 
+
 class ClientActionRoom(ClientAction):
 
     def RunCommand( self, clients, dungeon ):
         return [ ClientMessage( self.socket, self.action, ClientMessage.MESSAGE_TYPE_ROOM ) ]
+
 
 class ClientActionRename(ClientAction):
 
@@ -117,6 +120,52 @@ class ClientActionRename(ClientAction):
         ]
 
 
+class ClientActionSearch(ClientAction):
+
+    def RunCommand( self, clients, dungeon ):
+
+        currentRoom = clients[self.socket].currentRoom
+        foundItem = dungeon.roomMap[currentRoom].searchForItem()
+        message = "you did not find an item this time"
+
+        if foundItem is not None:
+            message = "You found a "+foundItem.name + "\n" + foundItem.getInfo()
+            clients[self.socket].pendingAction = ClientCollectItem(self.socket, foundItem)
+            message += "\n" + clients[self.socket].pendingAction.ActionDesc()
+
+        return [ ClientMessage( self.socket, message, ClientMessage.MESSAGE_TYPE_SELF, False ) ]
+
+
+class ClientCollectItem(ClientDecisions):
+
+    def __init__(self, socket, item):
+        super().__init__(socket)
+        self.item = item
+
+    def ActionDesc( self ):
+        return "do you 'take' the item or 'leave' the item"
+
+    def Decision( self, clients, dungeon, decision ):
+        """
+
+        :param clients:
+        :param dungeon:
+        :param decision:
+        :return: tuple (was the decision successful, follow up commands)
+        """
+        if decision == "take":
+            clients[self.socket].collectItem(self.item, dungeon.roomMap[clients[self.socket].currentRoom])
+            return True, \
+                   [ ClientMessage( self.socket, "You have chosen to take the "+self.item.name, ClientMessage.MESSAGE_TYPE_SELF, False ) ]
+        elif decision == "leave":
+            return True, \
+                   [ ClientMessage( self.socket, "You have chosen to leave the "+self.item.name+". Good luck finding that again!", ClientMessage.MESSAGE_TYPE_SELF, False ) ]
+        else:
+            return False, \
+                   [ ClientMessage( self.socket, "Decision not found\n" + self.ActionDesc(), ClientMessage.MESSAGE_TYPE_SELF, False ) ]
+
+
+
 class ClientActionDispatcher( ClientCommand ):
 
     commands = {
@@ -124,7 +173,8 @@ class ClientActionDispatcher( ClientCommand ):
         "go": ClientActionGo,
         "talk": ClientActionTalk,
         "room": ClientActionRoom,
-        "rename": ClientActionRename
+        "rename": ClientActionRename,
+        "search": ClientActionSearch
     }
 
     def __init__( self, socket, message ):
@@ -140,6 +190,13 @@ class ClientActionDispatcher( ClientCommand ):
         command = user_input[ 0 ].lower()
         action = ""
 
+        # check we are not waiting for a dicision to be made
+        if clients[self.socket].pendingAction != None:
+            success, followUps = clients[ self.socket ].pendingAction.Decision( clients, dungeon, command )
+            if success:
+                clients[self.socket].pendingAction = None
+            return followUps
+
         if command != "help" and len( user_input ) < 2 or command not in self.commands:
             return [ ClientMessage( self.socket, "Invalid command", ClientMessage.MESSAGE_TYPE_SELF ) ]
 
@@ -147,3 +204,4 @@ class ClientActionDispatcher( ClientCommand ):
             action = ' '.join( user_input[ 1: ] )
 
         return self.commands[ command ]( self.socket, action ).RunCommand( clients, dungeon )
+

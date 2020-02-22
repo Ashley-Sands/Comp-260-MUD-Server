@@ -38,10 +38,14 @@ class Room:
 
     def searchForItem( self ):
 
-        chance = self.searchChance()
-        itemId = random.randint(0, len(self.items))
+        if len(self.items) == 0:
+            return None
 
-        if random.random() <= chance:
+        chance = self.searchChance()
+        itemId = random.randint(0, len(self.items)-1 )
+        rand = random.random()
+        print( str(rand) +" < "+ str(chance) +"("+ str(itemId)+")")
+        if rand <= chance:
             return self.items[itemId]
         else:
             return None
@@ -74,3 +78,8 @@ class Item:
                 cb()
 
         return damage, selfDamage
+
+    def getInfo( self ):
+
+        return "hp: "+str(int(self.currentHP))+" of "+str(self.maxHP) + " damage: " + str(self.damage) +\
+               " damage chance " + str(self.damageChance * 100) + "%"
