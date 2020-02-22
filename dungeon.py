@@ -55,7 +55,7 @@ class Dungeon:
 
         exitStr = exitStr[:-1]  # remove the last new line :)
 
-        return self.roomMap[roomName].desc + " \nYou see "+str(len(exitStr.split('\n')))+" doors covered in blood \n" + exitStr
+        return self.roomMap[roomName].desc + " \nYou see "+str(len(exitStr.split('\n')))+" doors covered in blood to the\n" + exitStr
 
 
     def isValidMove(self, direction, roomName):
