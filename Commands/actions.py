@@ -2,6 +2,7 @@ from Commands.message import *
 from Commands.decision import *
 import random
 
+
 class ClientActionHelp( ClientAction ):
 
     def __init__(self, socket, action):

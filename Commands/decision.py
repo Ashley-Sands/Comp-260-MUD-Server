@@ -1,4 +1,16 @@
+import Commands.actions as act
 from Commands.message import *
+
+class ClientContinue(ClientDecisions):
+
+    def Decision( self, clients, dungeon, decision ):
+        if decision != "":
+            return True, act.ClientActionHelp( self.socket, "options" ).RunCommand( clients, dungeon )
+        else:
+            return True, [ClientMessage(self.socket, "Enter anything to continue", ClientMessage.MESSAGE_TYPE_SELF)]
+
+
+
 
 class ClientCollectItem(ClientDecisions):
 

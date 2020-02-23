@@ -87,8 +87,7 @@ def clientReceive(sock):
                 for act in ClientActionDispatcher( sock, incoming_msg).RunCommand(currentClients, activeDungeon):
                     messageQueue.put( act )
                     # messageQueue.put(ClientMessage(sock, incoming_msg, ClientMessage.MESSAGE_TYPE_ALL_OTHER) )
-            else:
-                raise socket.error
+
         except socket.error:
             debug_print(clientName +':clientReceive - lost client')
             clientValid = False
@@ -105,8 +104,8 @@ def acceptClients(serversocket):
             pass
 
         messageQueue.put(ClientJoined(clientsocket).welcome()[0])
-        for h in ClientActionHelp(clientsocket, "options").RunCommand(currentClients, activeDungeon):
-            messageQueue.put(h)
+        currentClients[clientsocket].pendingAction = ClientContinue(clientsocket)
+
 
 
 

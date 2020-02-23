@@ -33,7 +33,7 @@ class ClientMessage(CommandBase):
         if not self.display_name:
             return ""
 
-        if clients is not None:
+        if clients is not None and self.socket in clients:
             return clients[self.socket].clientName + ": "
         else:
             return "Server says "
