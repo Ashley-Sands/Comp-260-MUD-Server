@@ -155,10 +155,13 @@ class ClientActionAttackUser( ClientAction ):
 
     def RunCommand( self, clients, dungeon ):
 
+        if self.action == clients[self.socket].clientName:
+            return [ ClientMessage( self.socket, " Don't hurt yourself... ", ClientMessage.MESSAGE_TYPE_SELF ) ]
+
         clientToAttack = None
         clientToAttackSocket = None
         for c in clients:
-            if clients[c].clientName == self.action and clients[c].currentRoom == clients[self.socket].currentRoom:
+            if c is not self.socket and clients[c].clientName == self.action and clients[c].currentRoom == clients[self.socket].currentRoom:
                 clientToAttack = clients[c]
                 clientToAttackSocket = c
                 break
@@ -166,14 +169,18 @@ class ClientActionAttackUser( ClientAction ):
         if clientToAttack is None:
             return [ ClientMessage( self.socket, self.action + " not found in current room", ClientMessage.MESSAGE_TYPE_SELF ) ]
 
-        attacker_name = clientToAttack.clientName
-        victim_name = clients[self.socket].clientName
+        attacker_name = clients[self.socket].clientName
+        victim_name = clientToAttack.clientName
 
         weapon = clients[self.socket].item
         defence_weapon = clientToAttack.item
 
-        clientAlive, damageGiven, damageTaken = clientToAttack.attack( weapon, clients )
+        clientAlive, damageGiven, damageTaken = clientToAttack.attack( weapon, clientToAttack )
         selfDeaded = False
+
+        # apply the damage to the two players
+        clientToAttack.takeDamage(int(damageGiven))
+        clients[self.socket].takeDamage(int(damageTaken))
 
         messages = [] # list of tuples. tuple layout (message, message type, [(optional) display from in message, [(optional)ignore client name]] )
 
@@ -188,9 +195,9 @@ class ClientActionAttackUser( ClientAction ):
         else:   # they put up a bit of a fight, as a result you take damage as well
 
             clients[ self.socket ].takeDamage( damageTaken )
-            messages.append( (victim_name + " put up a bit of fight, as a result you have taken " + str(damageTaken) + " damage", ClientMessage.MESSAGE_TYPE_SELF, False) )
+            messages.append( (victim_name + " put up a bit of fight, as a result you have taken " + str(int(damageTaken)) + " damage", ClientMessage.MESSAGE_TYPE_SELF, False) )
             messages.append( (attacker_name + " attacked " + victim_name, ClientMessage.MESSAGE_TYPE_ALL_OTHER, False) )
-            messages.append( (attacker_name + " attacked you with a " + weapon.name + " causing "+ str(damageGiven) +" damage.") )
+            messages.append( (attacker_name + " attacked you with a " + weapon.name + " causing "+ str(int(damageGiven)) +" damage.", ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name) )
 
 
         if selfDeaded:  # you got your ass handed to ya.
@@ -204,7 +211,7 @@ class ClientActionAttackUser( ClientAction ):
             # give the attack the option to start again
             clients[self.socket].pendingAction = ClientNewGame(self.socket)
         else:
-            messages.append( (" But you put a fight and managed to defend your self. ("+attacker_name+" lost "+damageTaken+" hp) ",
+            messages.append( (" But you put a fight and managed to defend your self. ("+str(attacker_name)+" lost "+str(int(damageTaken))+" hp) ",
                               ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name) )
 
         # build the messages to each endpoint into a single message for each
@@ -212,13 +219,13 @@ class ClientActionAttackUser( ClientAction ):
         client_msgs = []    # list of final messages
 
         for m in messages:
-            if m[2] in msg:
-                msg[ m[2] ][0] = msg[ m[2] ][0] + "\n" + m[0]
+            if m[1] in msg:
+                msg[ m[1] ][0] = msg[ m[1] ][0] + "\n" + m[0]
             else:
-                msg[ m[2] ] = m
+                msg[ m[1] ] = list(m)
 
         for m in msg:
-            client_msgs.append( ClientMessage(self.socket, *m) )
+            client_msgs.append( ClientMessage(self.socket, *msg[m]) )
 
         return client_msgs
 

@@ -27,10 +27,10 @@ class Client:
 
         return not self.is_alive()
 
-    def attack( self, attackWithItem, clients):
+    def attack( self, attackWithItem, victim):
         """returns tuple (is alive, damage taken, damage given)"""
 
-        damageTaken, damageGiven = Item.getItemDamage(attackWithItem, self.item, clients)
+        damageTaken, damageGiven = Item.getItemDamage(attackWithItem, victim)
 
         return self.is_alive(), damageTaken, damageGiven
 

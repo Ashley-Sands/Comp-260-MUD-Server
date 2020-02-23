@@ -72,7 +72,7 @@ class Item:
 
         winPrecent = random.uniform(0.5, 1.0)
 
-        if random.random < victim.defence:   # victim wins
+        if random.random() < victim.defence:   # victim wins
             victimDamage *= winPrecent
             damage *= (1.0 - winPrecent)
         else:                               # attacker wins

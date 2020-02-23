@@ -57,7 +57,6 @@ class ClientMessage(CommandBase):
     def message_all_other( self, send_message_func, clients, ignoreClient=None ):
 
         clientExist = self.socket in clients
-        from_client = clients[self.socket].clientName
 
         for c in clients:
             # skip the ignored client :)
@@ -91,6 +90,4 @@ class ClientMessage(CommandBase):
         if foundClientSocket is None:
             return  # client not found.
 
-        if client_name in clients:
-            send_message_func( foundClientSocket, self.get_prefix(clients) + self.message  )
-
+        send_message_func( foundClientSocket, self.get_prefix(clients) + self.message )
