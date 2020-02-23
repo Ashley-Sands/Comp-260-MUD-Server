@@ -196,7 +196,7 @@ class ClientActionAttackUser( ClientAction ):
 
             clients[ self.socket ].takeDamage( damageTaken )
             messages.append( (victim_name + " put up a bit of fight, as a result you have taken " + str(int(damageTaken)) + " damage", ClientMessage.MESSAGE_TYPE_SELF, False) )
-            messages.append( (attacker_name + " attacked " + victim_name, ClientMessage.MESSAGE_TYPE_ALL_OTHER, False) )
+            messages.append( (attacker_name + " attacked " + victim_name, ClientMessage.MESSAGE_TYPE_ALL_OTHER_EXCEPT, False, victim_name) )
             messages.append( (attacker_name + " attacked you with a " + weapon.name + " causing "+ str(int(damageGiven)) +" damage.", ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name) )
 
 
