@@ -7,7 +7,7 @@ class Client:
     def __init__(self, client_name):
         self.clientName = client_name
         self.currentRoom = "room 0"
-        self.bearHands = Item("Bare Hands", 10, 999, 0.23)  # default item
+        self.bearHands = Item("Bare Knuckle", 10, 999, 0.23)  # default item
         self.item = self.bearHands
         self.health = 100
         self.defence = 0.5
@@ -32,14 +32,14 @@ class Client:
 
         damageTaken, damageGiven = Item.getItemDamage(attackWithItem, victim)
 
-        return self.is_alive(), damageTaken, damageGiven
+        return damageTaken, damageGiven
 
     def collectItem( self, item, room ):
         # take the item from the room
         room.items.remove(item)
 
         # drop our current item in room
-        if self.item is not None:
+        if self.item is not None and self.itemBroken in self.item.itemBrokenCallback:
             self.item.itemBrokenCallback.remove(self.itemBroken)
             room.items.append(self.item)
 

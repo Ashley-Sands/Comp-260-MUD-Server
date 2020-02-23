@@ -175,16 +175,15 @@ class ClientActionAttackUser( ClientAction ):
         weapon = clients[self.socket].item
         defence_weapon = clientToAttack.item
 
-        clientAlive, damageGiven, damageTaken = clientToAttack.attack( weapon, clientToAttack )
-        selfDeaded = False
+        damageGiven, damageTaken = clientToAttack.attack( weapon, clientToAttack )
 
         # apply the damage to the two players
-        clientToAttack.takeDamage(int(damageGiven))
-        clients[self.socket].takeDamage(int(damageTaken))
+        victim_dead = clientToAttack.takeDamage(int(damageGiven))
+        attacker_dead = clients[self.socket].takeDamage(int(damageTaken))
 
         messages = [] # list of tuples. tuple layout (message, message type, [(optional) display from in message, [(optional)ignore client name]] )
 
-        if not clientAlive: # that was easy there deaded
+        if victim_dead: # that was easy there deaded
 
             messages.append( ("You killed "+victim_name, ClientMessage.MESSAGE_TYPE_SELF, False) )
             messages.append( (attacker_name+" killed "+victim_name, ClientMessage.MESSAGE_TYPE_ALL_OTHER_EXCEPT, False, victim_name) )
@@ -194,13 +193,12 @@ class ClientActionAttackUser( ClientAction ):
 
         else:   # they put up a bit of a fight, as a result you take damage as well
 
-            clients[ self.socket ].takeDamage( damageTaken )
             messages.append( (victim_name + " put up a bit of fight, as a result you have taken " + str(int(damageTaken)) + " damage", ClientMessage.MESSAGE_TYPE_SELF, False) )
             messages.append( (attacker_name + " attacked " + victim_name, ClientMessage.MESSAGE_TYPE_ALL_OTHER_EXCEPT, False, victim_name) )
             messages.append( (attacker_name + " attacked you with a " + weapon.name + " causing "+ str(int(damageGiven)) +" damage.", ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name) )
 
 
-        if selfDeaded:  # you got your ass handed to ya.
+        if attacker_dead:  # you got your ass handed to ya.
             messages.append( (victim_name +" killed You", ClientMessage.MESSAGE_TYPE_SELF, False ) )
             messages.append( ( attacker_name + " was killed by " + victim_name,
                                             ClientMessage.MESSAGE_TYPE_ALL_OTHER_EXCEPT, False, victim_name ) )

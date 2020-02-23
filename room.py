@@ -82,7 +82,7 @@ class Item:
         self.currentHP -= random.randrange(1, 50)
 
         if self.currentHP <= 0:
-            for cb in self.itemBrockenCallback:
+            for cb in self.itemBrokenCallback:
                 cb()
 
         return damage, victimDamage
