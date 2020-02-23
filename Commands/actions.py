@@ -202,8 +202,8 @@ class ClientActionAttackUser( ClientAction ):
             messages.append( (victim_name +" killed You", ClientMessage.MESSAGE_TYPE_SELF, False ) )
             messages.append( ( attacker_name + " was killed by " + victim_name,
                                             ClientMessage.MESSAGE_TYPE_ALL_OTHER_EXCEPT, False, victim_name ) )
-            messages.append( ("You put up a good fight and managed to deliver a fatal blow to your attackers" 
-                              " head with you "+defence_weapon.name + " resulting in instance death\n"
+            messages.append( ("You put up a good fight and managed to deliver a fatal blow to your attackers\n" 
+                              " head with your "+defence_weapon.name + " resulting in instance death\n"
                               " ** There's blood everywhere **\nlets hope the zombies don't smell that",
                               ClientMessage.MESSAGE_TYPE_PRIVATE, False, victim_name ) )
             # give the attack the option to start again

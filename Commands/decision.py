@@ -39,6 +39,8 @@ class ClientNewGame(ClientDecisions):
     def Decision( self, clients, dungeon, decision ):
 
         if decision == "yes" or decision == "new" or decision == "y":
-            pass    # new game things...
+            return False, \
+                   [ ClientMessage( self.socket, "Work in progress\n", ClientMessage.MESSAGE_TYPE_SELF, False ) ]
         else:
-            return [ ClientMessage( self.socket, "Decision not found\n" + self.ActionDesc(), ClientMessage.MESSAGE_TYPE_SELF, False ) ]
+            return False, \
+                   [ ClientMessage( self.socket, "Decision not found\n" + self.ActionDesc(), ClientMessage.MESSAGE_TYPE_SELF, False ) ]
