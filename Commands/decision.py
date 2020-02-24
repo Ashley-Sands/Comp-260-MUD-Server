@@ -3,14 +3,14 @@ from Commands.message import *
 
 class ClientContinue(ClientDecisions):
 
+    def ActionDesc( self ):
+        return "Enter anything to continue"
+
     def Decision( self, clients, dungeon, decision ):
-        if decision != "":
+        if decision != "":  # if the user does not enter any responce display what options they can make. (and let them continue)
             return True, act.ClientActionHelp( self.socket, "options" ).RunCommand( clients, dungeon )
         else:
             return True, [ClientMessage(self.socket, "Enter anything to continue", ClientMessage.MESSAGE_TYPE_SELF)]
-
-
-
 
 class ClientCollectItem(ClientDecisions):
 
