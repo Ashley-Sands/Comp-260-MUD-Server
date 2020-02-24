@@ -24,6 +24,22 @@ deadEntities = {}
 host = ''
 port = 0
 
+def get_entity( entity_type, entity_key ):
+    """
+
+    :param entity_type:         The Type of entity (See Entity for type constants)
+    :param entity_key:          The key for the entity. (for default and zombies this is there name else it is the socket related to the client) leave None to return all
+    :return:                    None if not found
+    """
+    entities = {Entity.ENTITY_DEFAULT: deadEntities, Entity.ENTITY_CLIENT: currentClients, Entity.ENTITY_ZOMBIE: zombieClients}
+    if entity_key is None and entity_type in entities:
+        return entities[ entity_type ]
+    elif entity_type in entities and entity_key in entities[entity_key]:
+        return entities[ entity_type ][ entity_key ]
+    else:
+        return None
+
+
 def debug_print(text):
     print(str(datetime.datetime.now()) + ':' + text)
 

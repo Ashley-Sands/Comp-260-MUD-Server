@@ -5,6 +5,10 @@ from Commands.message import *
 
 class Entity:
 
+    ENTITY_DEFAULT = 0
+    ENTITY_CLIENT  = 1
+    ENTITY_ZOMBIE  = 2
+
     def __init__(self, client_name, current_room, item):
         self.clientName = client_name
         self.currentRoom = current_room
