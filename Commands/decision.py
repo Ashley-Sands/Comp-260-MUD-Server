@@ -7,10 +7,10 @@ class ClientContinue(ClientDecisions):
         return "Enter anything to continue"
 
     def Decision( self, clients, dungeon, decision ):
-        if decision != "":  # if the user does not enter any responce display what options they can make. (and let them continue)
+        if decision != "":  # it the client enters anything continue displaying there options with moving forwards
             return True, act.ClientActionHelp( self.socket, "options" ).RunCommand( clients, dungeon )
         else:
-            return True, [ClientMessage(self.socket, "Enter anything to continue", ClientMessage.MESSAGE_TYPE_SELF)]
+            return False, [ClientMessage(self.socket, "Enter anything to continue", ClientMessage.MESSAGE_TYPE_SELF)]
 
 class ClientCollectItem(ClientDecisions):
 
