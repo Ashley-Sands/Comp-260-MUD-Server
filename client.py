@@ -2,16 +2,25 @@ import random
 from room import Item
 from Commands.message import *
 
-class Client:
+
+class Entity:
+
+    def __init__(self, client_name, current_room, item):
+        self.clientName = client_name
+        self.currentRoom = current_room
+        self.item = item
+
+
+class Client( Entity ):
 
     def __init__(self, client_name):
-        self.clientName = client_name
-        self.currentRoom = "room 0"
+
         self.bearHands = Item("Bare Knuckle", 10, 999, 0.23)  # default item
-        self.item = self.bearHands
+
+        super(Client, self).__init__( client_name, "room_0", self.bearHands )
+
         self.health = 100
         self.defence = 0.5
-
         self.pendingAction = None   # used for when a client needs to make a decisions
 
     def is_alive( self ):

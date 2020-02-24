@@ -18,6 +18,9 @@ currentClientsLock = threading.Lock()
 zombieIndex = 0
 zombieClients = {}
 
+deadEntitiesIndex = 0
+deadEntities = {}
+
 host = ''
 port = 0
 

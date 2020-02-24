@@ -2,6 +2,10 @@ class CommandBase:
     def __init__(self, socket):
         self.socket = socket
 
+# TODO: clients should become entities and be a dict or tuple [Clients, Zombies and Deaded things]
+# Or pass in a function to get the client, zombie or deaded thing...
+
+
 class ClientCommand(CommandBase):
 
     def RunCommand( self, clients, dungeon ):
