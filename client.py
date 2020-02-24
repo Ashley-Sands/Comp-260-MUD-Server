@@ -17,7 +17,7 @@ class Client( Entity ):
 
         self.bearHands = Item("Bare Knuckle", 10, 999, 0.23)  # default item
 
-        super(Client, self).__init__( client_name, "room_0", self.bearHands )
+        super(Client, self).__init__( client_name, "room 0", self.bearHands )
 
         self.health = 100
         self.defence = 0.5
