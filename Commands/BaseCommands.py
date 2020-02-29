@@ -8,6 +8,10 @@ class CommandBase:
 
 class ClientCommand(CommandBase):
 
+    def __init__(self, socket): #, get_entity_func):
+        super().__init__( socket )
+        # self.GetEntity = get_entity_func
+
     def RunCommand( self, clients, dungeon ):
         """ Runs the command returning a list of follow up commands
 
