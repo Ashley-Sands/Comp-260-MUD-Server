@@ -193,7 +193,7 @@ def main():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    host = 'localhost'
+    host = '0.0.0.0'
     port = 9000
 
     if len(sys.argv) > 1:
